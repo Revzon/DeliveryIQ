@@ -1,0 +1,44 @@
+name: Generate Massive History
+on:workflow_dispatch: # Allows you to trigger this manually with a single clickpermissions:contents: write # Grants GitHub permission to push commits and branches to your repojobs:generate:runs-on: ubuntu-latest
+    steps:- name: Checkout Code
+        uses: actions/checkout@v4
+        with:fetch-depth: 0- name: Auto-generate branches and commits
+        run: |          # 1. Setup identity for the commits
+          git config --global user.name "Demo History Generator"
+          git config --global user.email "demo-bot@example.com"# Configure remote push URL using the built-in write token          git remote set-url origin "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git"
+
+          # 2. Generate 30 rapid commits on 'main' branch          echo "=== Generating main branch commits ==="
+          for i in {1..30}          do
+            echo "Auto-generated log entry #$i" >> system_logs.log            git add system_logs.log
+            git commit -m "chore: database update tick #$i"          done
+          git push origin main
+
+          # 3. Create 'feature/auth' branch with 10 commits          echo "=== Generating feature/auth branch ==="
+          git checkout -b feature/auth
+          for i in {1..10}          do
+            echo "// Auth module patch $i" >> auth.js
+            git add auth.js
+            git commit -m "feat(auth): implement security layer patch $i"
+          done
+          git push origin feature/auth
+
+          # 4. Create 'feature/ui-refresh' branch with 15 commits          echo "=== Generating feature/ui-refresh branch ==="
+          git checkout main
+          git checkout -b feature/ui-refresh
+          for i in {1..15}          do
+            echo "/* UI Style change v$i */" >> style.css
+            git add style.css
+            git commit -m "style(ui): adjust layout scheme iteration $i"
+          done
+          git push origin feature/ui-refresh
+
+          # 5. Create 'bugfix/api-leak' branch with 5 commits          echo "=== Generating bugfix/api-leak branch ==="
+          git checkout main
+          git checkout -b bugfix/api-leak
+          for i in {1..5}          do
+            echo "# API Hotfix patch $i" >> api.config            git add api.config
+            git commit -m "fix(api): plug leakage endpoint v$i"
+          done
+          git push origin bugfix/api-leak
+
+          echo "=== Completed History Generation ==="

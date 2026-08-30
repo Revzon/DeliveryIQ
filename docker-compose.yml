@@ -1,0 +1,5 @@
+services:
+  api:
+    build: ./backend
+  db:
+    image: postgres:16

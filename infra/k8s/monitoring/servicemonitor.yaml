@@ -1,2 +1,20 @@
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
+metadata:
+  name: deliveryiq-api
+  namespace: deliveryiq
+  labels:
+    app: deliveryiq
+    team: platform
+spec:
+  selector:
+    matchLabels:
+      app: deliveryiq-api
+  namespaceSelector:
+    matchNames:
+      - deliveryiq
+  endpoints:
+    - port: http
+      path: /actuator/prometheus
+      interval: 30s
+      scrapeTimeout: 10s

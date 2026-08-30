@@ -1,0 +1,46 @@
+spring:
+  application:
+    name: deliveryiq-api
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:deliveryiq}
+    username: ${DB_USER:deliveryiq}
+    password: ${DB_PASSWORD:deliveryiq}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP:localhost:9092}
+    consumer:
+      group-id: deliveryiq-tracking
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+
+server:
+  port: ${SERVER_PORT:8080}
+
+deliveryiq:
+  jwt:
+    secret: ${JWT_SECRET:change-me-deliveryiq-enterprise-secret-key-32b}
+    expiration-ms: ${JWT_EXPIRATION_MS:86400000}
+  cache:
+    dashboard-ttl-seconds: 60
+    route-ttl-seconds: 120
+  kafka:
+    tracking-topic: tracking.events
+
+logging:
+  level:
+    com.deliveryiq: INFO
